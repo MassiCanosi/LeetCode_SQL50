@@ -1,25 +1,12 @@
 /* Write your T-SQL query statement below */
-WITH CTE AS (
-    SELECT
-    a.machine_id
-    , a.process_id
-    , a.timestamp AS [start] 
-    FROM Activity a
-    WHERE a.activity_type = 'start'
-) 
 SELECT 
-CTE.machine_id
-, ROUND(AVG(TEMP.[end] - CTE.[start]),3) AS processing_time
-FROM (
-    SELECT
-    a.machine_id
-    , a.process_id
-    , a.timestamp AS [end]      
-    FROM Activity a
-    WHERE a.activity_type = 'end'
-) TEMP
-JOIN CTE 
-    ON TEMP.machine_id = CTE.machine_id
-    AND TEMP.process_id = CTE.process_id
+A1.machine_id
+, ROUND(AVG(A2.timestamp - A1.timestamp),3) AS processing_time
+FROM Activity A1, Activity A2
+WHERE 
+A1.machine_id = A2.machine_id
+AND A1.process_id = A2.process_id
+AND A1.activity_type = 'start'
+AND A2.activity_type = 'end'
 GROUP BY 
-CTE.machine_id
+A1.machine_id
